@@ -1,5 +1,5 @@
 const express = require("express");
-
+const db = require("./db");
 const app = express();
 const PORT = 3000;
 
@@ -7,10 +7,15 @@ const PORT = 3000;
 app.use(express.json());
 
 // Ruta de prueba
-app.get("/", (req, res) => {
-  res.send("API funcionando 🚀");
+app.get("/test", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT 1");
+    res.json(rows);
+  } catch (error) {
+    res.send("API funcionando 🚀");
+  }
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor corriendo`);
 });
