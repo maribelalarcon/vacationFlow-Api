@@ -1,5 +1,7 @@
 const express = require("express");
 const db = require("./db");
+const solicitudesRoutes = require("./routes/solicitudes");
+
 const app = express();
 const PORT = 3000;
 
@@ -15,6 +17,9 @@ app.get("/test", async (req, res) => {
     res.send("API funcionando 🚀");
   }
 });
+
+//API Solicitud
+app.use("/solicitudes", solicitudesRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo`);
