@@ -1,12 +1,15 @@
 const express = require("express");
+const path = require("path");
 const db = require("./db");
 const solicitudesRoutes = require("./routes/solicitudes");
+const yoRoutes = require("./routes/yo");
 
 const app = express();
 const PORT = 3000;
 
 // Middleware
 app.use(express.json());
+app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
 
 // Ruta de prueba
 app.get("/test", async (req, res) => {
@@ -18,9 +21,11 @@ app.get("/test", async (req, res) => {
   }
 });
 
-//API Solicitud
 app.use("/solicitudes", solicitudesRoutes);
+app.use("/yo", yoRoutes);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Servidor corriendo`);
 });
+
+module.exports = server;
