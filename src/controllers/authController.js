@@ -1,60 +1,54 @@
-const db = require("../db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Usuario = require("../models/usuarioModel");
 
 const SECRET = process.env.JWT_SECRET || "secret123";
 
-exports.register = async (req, res) => {
+const register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { nombre, apellido, apellidos, email, password } = req.body;
+    const apellidoNormalizado = apellido || apellidos;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "Complete todos los campos por favor" });
+    if (!nombre || !apellidoNormalizado || !email || !password) {
+      return res.status(400).json({ message: "Completa todos los campos obligatorios." });
     }
 
-    const [users] = await db.query(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
-    );
+    const user = await Usuario.findByEmail(email);
 
-    if (users.length > 0) {
-      return res.status(400).json({ message: "Usuario ya registrado" });
+    if (user) {
+      return res.status(400).json({ message: "El usuario ya está registrado." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await db.query(
-      "INSERT INTO users (email, password) VALUES (?, ?)",
-      [email, hashedPassword]
-    );
+    await Usuario.create({
+      nombre,
+      apellido: apellidoNormalizado,
+      email,
+      password_hash: hashedPassword,
+    });
 
-    res.status(201).json({ message: "Usuario creado" });
-
+    res.status(201).json({ message: "Usuario creado correctamente." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error en el servidor" });
+    console.error("Error en Controller:", error);
+    res.status(500).json({ message: "Se produjo un error en el servidor." });
   }
 };
 
-exports.login = async (req, res) => {
+const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const [users] = await db.query(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
-    );
+    const user = await Usuario.findByEmail(email);
 
-    if (users.length === 0) {
-      return res.status(400).json({ message: "Datos incorrectos" });
+    if (!user) {
+      return res.status(400).json({ message: "Las credenciales no son correctas." });
     }
 
-    const user = users[0];
-
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Datos incorrectos" });
+      return res.status(400).json({ message: "Las credenciales no son correctas." });
     }
 
     const token = jwt.sign(
@@ -64,9 +58,10 @@ exports.login = async (req, res) => {
     );
 
     res.json({ token });
-
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error en el servidor" });
+    console.error("Error en Controller:", error);
+    res.status(500).json({ message: "Se produjo un error en el servidor." });
   }
 };
+
+module.exports = { register, login };

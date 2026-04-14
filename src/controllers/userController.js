@@ -1,71 +1,70 @@
-const db = require("../db");
+const Usuario = require("../models/usuarioModel");
 
-// Obtener todos los usuarios
-exports.getUsers = async (req, res) => {
+const getUsers = async (req, res) => {
   try {
-    const [users] = await db.query(
-      "SELECT id, nombre, apellidos, email, telefono, rol, created_at FROM users"
-    );
+    const users = await Usuario.getAll();
 
     res.json(users);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error en servidor" });
+    console.error("Error en Controller:", error);
+    res.status(500).json({ message: "Se produjo un error en el servidor." });
   }
 };
 
-// Obtener usuario por ID
-exports.getUserById = async (req, res) => {
+const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [users] = await db.query(
-      "SELECT id, nombre, apellidos, email, telefono, rol, created_at FROM users WHERE id = ?",
-      [id]
-    );
+    const user = await Usuario.getById(id);
 
-    if (users.length === 0) {
-      return res.status(404).json({ message: "Usuario no localizado" });
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
     }
 
-    res.json(users[0]);
+    res.json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error en el servidor" });
+    console.error("Error en Controller:", error);
+    res.status(500).json({ message: "Se produjo un error en el servidor." });
   }
 };
 
-// Obtener perfil del usuario registrado
-exports.getProfile = async (req, res) => {
+const getProfile = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
-    const [users] = await db.query(
-      "SELECT id, nombre, apellidos, email, telefono, rol FROM users WHERE id = ?",
-      [userId]
-    );
+    const user = await Usuario.getProfileById(userId);
 
-    res.json(users[0]);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado." });
+    }
+
+    res.json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al localizar el usuario" });
+    console.error("Error en Controller:", error);
+    res.status(500).json({ message: "Se produjo un error al obtener el perfil." });
   }
 };
 
-// Actualizar perfil
-exports.updateProfile = async (req, res) => {
+const updateProfile = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const { nombre, apellidos, telefono } = req.body;
+    const userId = req.user.userId;
+    const { nombre, apellido, apellidos } = req.body;
+    const apellidoNormalizado = apellido || apellidos;
 
-    await db.query(
-      "UPDATE users SET nombre = ?, apellidos = ?, telefono = ? WHERE id = ?",
-      [nombre, apellidos, telefono, userId]
-    );
+    if (!nombre || !apellidoNormalizado) {
+      return res.status(400).json({ message: "El nombre y los apellidos son obligatorios." });
+    }
 
-    res.json({ message: "Perfil actualizado correctamente" });
+    await Usuario.updateProfileById(userId, {
+      nombre,
+      apellido: apellidoNormalizado,
+    });
+
+    res.json({ message: "Perfil actualizado correctamente." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al actualizar perfil" });
+    console.error("Error en Controller:", error);
+    res.status(500).json({ message: "Se produjo un error al actualizar el perfil." });
   }
 };
+
+module.exports = { getUsers, getUserById, getProfile, updateProfile };

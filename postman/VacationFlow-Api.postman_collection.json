@@ -1,0 +1,199 @@
+{
+  "info": {
+    "_postman_id": "b6d6129d-5d9f-44cf-9b5d-6df26b82b4b0",
+    "name": "VacationFlow API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Coleccion base para probar los endpoints actuales de VacationFlow API en local."
+  },
+  "item": [
+    {
+      "name": "Healthcheck",
+      "item": [
+        {
+          "name": "GET /test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "test"
+              ]
+            },
+            "description": "Verifica que la API responde y que la conexion basica con la BD no falla."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Disponibilidad",
+      "item": [
+        {
+          "name": "GET /yo/disponible",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 o 404\", function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/yo/disponible?usuario_id={{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "yo",
+                "disponible"
+              ],
+              "query": [
+                {
+                  "key": "usuario_id",
+                  "value": "{{usuarioId}}"
+                }
+              ]
+            },
+            "description": "Consulta los dias disponibles del usuario configurado en el entorno."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Solicitudes",
+      "item": [
+        {
+          "name": "POST /solicitudes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 o error esperado\", function () {",
+                  "  pm.expect([201, 400, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usuario_id\": {{usuarioId}},\n  \"tipo\": \"vacaciones\",\n  \"fecha_inicio\": \"{{fechaInicio}}\",\n  \"fecha_fin\": \"{{fechaFin}}\",\n  \"comentario\": \"Prueba desde Postman\",\n  \"justificante_ref\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes"
+              ]
+            },
+            "description": "Crea una solicitud. Necesita que el usuario exista en la tabla usuarios."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Justificantes",
+      "item": [
+        {
+          "name": "POST /solicitudes/subir-justificante",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 o 400\", function () {",
+                  "  pm.expect([201, 400]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "justificante",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/solicitudes/subir-justificante",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "solicitudes",
+                "subir-justificante"
+              ]
+            },
+            "description": "Sube una imagen jpeg/png o un PDF. En Postman debes seleccionar el archivo manualmente."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3000"
+    },
+    {
+      "key": "usuarioId",
+      "value": "1"
+    },
+    {
+      "key": "fechaInicio",
+      "value": "2026-04-20"
+    },
+    {
+      "key": "fechaFin",
+      "value": "2026-04-24"
+    }
+  ]
+}
