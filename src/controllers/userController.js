@@ -1,6 +1,6 @@
 const db = require("../db");
 
-// Obtener usuarios
+// Obtener todos los usuarios
 exports.getUsers = async (req, res) => {
   try {
     const [users] = await db.query(
@@ -25,13 +25,13 @@ exports.getUserById = async (req, res) => {
     );
 
     if (users.length === 0) {
-      return res.status(404).json({ message: "Usuario no encontrado" });
+      return res.status(404).json({ message: "Usuario no localizado" });
     }
 
     res.json(users[0]);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error en servidor" });
+    res.status(500).json({ message: "Error en el servidor" });
   }
 };
 
@@ -48,7 +48,7 @@ exports.getProfile = async (req, res) => {
     res.json(users[0]);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error al localizar al usuario" });
+    res.status(500).json({ message: "Error al localizar el usuario" });
   }
 };
 
