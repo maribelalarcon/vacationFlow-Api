@@ -1,9 +1,12 @@
 const db = require("../db");
 
-// Obtener todos los usuarios
+// Obtener usuarios
 exports.getUsers = async (req, res) => {
   try {
-    const [users] = await db.query("SELECT id, email, created_at FROM users");
+    const [users] = await db.query(
+      "SELECT id, nombre, apellidos, email, telefono, rol, created_at FROM users"
+    );
+
     res.json(users);
   } catch (error) {
     console.error(error);
@@ -17,7 +20,7 @@ exports.getUserById = async (req, res) => {
     const { id } = req.params;
 
     const [users] = await db.query(
-      "SELECT id, email, created_at FROM users WHERE id = ?",
+      "SELECT id, nombre, apellidos, email, telefono, rol, created_at FROM users WHERE id = ?",
       [id]
     );
 
@@ -26,9 +29,43 @@ exports.getUserById = async (req, res) => {
     }
 
     res.json(users[0]);
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error en servidor" });
+  }
+};
+
+// Obtener perfil del usuario registrado
+exports.getProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const [users] = await db.query(
+      "SELECT id, nombre, apellidos, email, telefono, rol FROM users WHERE id = ?",
+      [userId]
+    );
+
+    res.json(users[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al localizar al usuario" });
+  }
+};
+
+// Actualizar perfil
+exports.updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { nombre, apellidos, telefono } = req.body;
+
+    await db.query(
+      "UPDATE users SET nombre = ?, apellidos = ?, telefono = ? WHERE id = ?",
+      [nombre, apellidos, telefono, userId]
+    );
+
+    res.json({ message: "Perfil actualizado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error al actualizar perfil" });
   }
 };
