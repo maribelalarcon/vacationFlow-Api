@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
 const db = require("./db");
 const solicitudesRoutes = require("./routes/solicitudes");
@@ -9,6 +10,7 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
 app.use("/api/auth", authRoutes);
