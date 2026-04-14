@@ -2,10 +2,12 @@ const express = require("express");
 const multer = require("multer");
 const router = express.Router();
 const solicitudController = require("../controllers/solicitudController");
+const authMiddleware = require("../middleware/authMiddleware");
 const upload = require("../middleware/multer");
 
 router.post(
   "/subir-justificante",
+  authMiddleware,
   (req, res, next) => {
     upload.single("justificante")(req, res, (err) => {
       if (err instanceof multer.MulterError) {
@@ -24,6 +26,6 @@ router.post(
   solicitudController.subirJustificante,
 );
 
-router.post("/", solicitudController.crearSolicitud);
+router.post("/", authMiddleware, solicitudController.crearSolicitud);
 
 module.exports = router;

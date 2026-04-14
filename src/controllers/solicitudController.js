@@ -15,15 +15,15 @@ const parseDate = (value) => {
 const crearSolicitud = async (req, res) => {
   try {
     const {
-      usuario_id,
       tipo,
       fecha_inicio,
       fecha_fin,
       comentario,
       justificante_ref,
     } = req.body;
+    const usuario_id = req.user.userId;
 
-    if (!usuario_id || !tipo || !fecha_inicio || !fecha_fin) {
+    if (!tipo || !fecha_inicio || !fecha_fin) {
       return res.status(400).json({ message: "Faltan campos obligatorios." });
     }
 
@@ -97,11 +97,7 @@ const subirJustificante = async (req, res) => {
 
 const obtenerDisponibilidad = async (req, res) => {
   try {
-    const { usuario_id } = req.query;
-
-    if (!usuario_id) {
-      return res.status(400).json({ message: "El usuario_id es obligatorio." });
-    }
+    const usuario_id = req.user.userId;
 
     const disponibilidad = await Solicitud.getDisponibilidadByUsuario(usuario_id);
 
