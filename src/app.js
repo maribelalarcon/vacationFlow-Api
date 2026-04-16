@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const db = require("./db");
+const calendarioRoutes = require("./routes/calendario");
 const solicitudesRoutes = require("./routes/solicitudes");
 const yoRoutes = require("./routes/yo");
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/calendario", calendarioRoutes);
 app.use("/solicitudes", solicitudesRoutes);
 app.use("/yo", yoRoutes);
 
@@ -28,7 +30,7 @@ app.get("/test", async (req, res) => {
     const [rows] = await db.query("SELECT 1");
     res.json(rows);
   } catch (error) {
-    res.send("API funcionando");
+    res.send("API no funciona");
   }
 });
 
