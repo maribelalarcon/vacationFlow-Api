@@ -38,6 +38,18 @@ CREATE TABLE `usuario` (
   `rol` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE vacaciones (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  fecha_de_inicio DATE NOT NULL,
+  fecha_de_finalizacion DATE NOT NULL,
+  type ENUM('vacaciones', 'baja') DEFAULT 'vacaciones',
+  status ENUM('pendiente', 'aprobado', 'rechazado') DEFAULT 'pendiente',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 --
 -- Volcado de datos para la tabla `usuario`
 --
@@ -54,7 +66,11 @@ INSERT INTO `usuario` (`idusuario`, `nombre`, `apellidos`, `movil`, `correo`, `c
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`idusuario`),
+  ADD foto_perfil VARCHAR(255),
+  ADD especialidad VARCHAR(100),
+  ADD fecha_nacimiento DATE,
   ADD KEY `idusuario` (`idusuario`);
+  
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
