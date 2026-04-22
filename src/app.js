@@ -9,6 +9,9 @@ const app = express();
 const PORT = 3000;
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const vacationRoutes = require("./routes/vacationRoutes");
+
 
 // Middleware
 app.use(cors());
@@ -19,6 +22,9 @@ app.use("/api/users", userRoutes);
 app.use("/api/calendario", calendarioRoutes);
 app.use("/solicitudes", solicitudesRoutes);
 app.use("/yo", yoRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/vacations", vacationRoutes);
+
 
 app.get("/test2", (req, res) => {
   res.send("Ruta de usuarios operativa");
