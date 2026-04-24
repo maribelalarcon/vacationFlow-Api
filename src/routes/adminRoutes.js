@@ -5,6 +5,26 @@ const adminController = require("../controllers/adminController");
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
 
+router.get(
+  "/dashboard",
+  authMiddleware,
+  adminMiddleware,
+  adminController.getDashboard
+);
+
+router.get(
+  "/requests/:id",
+  authMiddleware,
+  adminMiddleware,
+  adminController.getRequestDetail
+);
+
+router.get(
+  "/employees",
+  authMiddleware,
+  adminMiddleware,
+  adminController.getEmployees
+);
 
 // Rutas para las solicitudes de vacaciones
 
