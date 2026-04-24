@@ -23,16 +23,17 @@ const Usuario = {
     return rows[0] || null;
   },
 
-  create: async ({ nombre, apellido, email, password_hash }) => {
+  create: async ({ nombre, apellido, email, password_hash, rol }) => {
     const query = `
-      INSERT INTO usuarios (nombre, apellido, email, password_hash)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO usuarios (nombre, apellido, email, password_hash, rol)
+      VALUES (?, ?, ?, ?, ?)
     `;
     const [result] = await db.query(query, [
       nombre,
       apellido,
       email,
       password_hash,
+      rol,
     ]);
     return result;
   },
