@@ -70,8 +70,8 @@ const getPendingVacations = async (req, res) => {
         u.email,
         s.tipo,
         s.estado,
-        s.fecha_inicio,
-        s.fecha_fin,
+        DATE_FORMAT(s.fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
+        DATE_FORMAT(s.fecha_fin, '%Y-%m-%d') AS fecha_fin,
         s.comentario,
         s.justificante_ref,
         DATEDIFF(s.fecha_fin, s.fecha_inicio) + 1 AS total_dias
@@ -196,8 +196,8 @@ const getCalendar = async (req, res) => {
           u.apellido AS apellidos,
           s.tipo,
           s.estado,
-          s.fecha_inicio,
-          s.fecha_fin,
+          DATE_FORMAT(s.fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
+          DATE_FORMAT(s.fecha_fin, '%Y-%m-%d') AS fecha_fin,
           s.comentario,
           s.justificante_ref,
           DATEDIFF(s.fecha_fin, s.fecha_inicio) + 1 AS total_dias
@@ -238,13 +238,13 @@ const getDashboard = async (req, res) => {
             u.nombre,
             u.apellido AS apellidos,
             u.email,
-            s.tipo,
-            s.estado,
-            s.fecha_inicio,
-            s.fecha_fin,
-            s.comentario,
-            s.justificante_ref,
-            DATEDIFF(s.fecha_fin, s.fecha_inicio) + 1 AS total_dias
+          s.tipo,
+          s.estado,
+          DATE_FORMAT(s.fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
+          DATE_FORMAT(s.fecha_fin, '%Y-%m-%d') AS fecha_fin,
+          s.comentario,
+          s.justificante_ref,
+          DATEDIFF(s.fecha_fin, s.fecha_inicio) + 1 AS total_dias
           FROM solicitudes s
           INNER JOIN usuarios u ON u.id = s.usuario_id
           WHERE s.estado = 'pendiente'
@@ -330,8 +330,8 @@ const getRequestDetail = async (req, res) => {
           s.usuario_id,
           s.tipo,
           s.estado,
-          s.fecha_inicio,
-          s.fecha_fin,
+          DATE_FORMAT(s.fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
+          DATE_FORMAT(s.fecha_fin, '%Y-%m-%d') AS fecha_fin,
           s.comentario,
           s.justificante_ref,
           s.created_at,

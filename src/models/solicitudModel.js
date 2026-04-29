@@ -33,8 +33,8 @@ const Solicitud = {
         usuario_id,
         tipo,
         estado,
-        fecha_inicio,
-        fecha_fin,
+        DATE_FORMAT(fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
+        DATE_FORMAT(fecha_fin, '%Y-%m-%d') AS fecha_fin,
         comentario,
         justificante_ref,
         created_at
