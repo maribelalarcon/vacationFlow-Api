@@ -11,8 +11,8 @@ const Solicitud = {
       justificante_ref,
     } = datos;
     const query = `
-      INSERT INTO solicitudes 
-      (usuario_id, tipo, fecha_inicio, fecha_fin, comentario, justificante_ref) 
+      INSERT INTO solicitudes
+      (usuario_id, tipo, fecha_inicio, fecha_fin, comentario, justificante_ref)
       VALUES (?, ?, ?, ?, ?, ?)
     `;
     const [result] = await db.query(query, [
@@ -24,6 +24,26 @@ const Solicitud = {
       justificante_ref,
     ]);
     return result;
+  },
+
+  getHistorialByUsuario: async (usuario_id) => {
+    const query = `
+      SELECT
+        id,
+        usuario_id,
+        tipo,
+        estado,
+        fecha_inicio,
+        fecha_fin,
+        comentario,
+        justificante_ref,
+        created_at
+      FROM solicitudes
+      WHERE usuario_id = ?
+      ORDER BY created_at DESC, id DESC
+    `;
+    const [rows] = await db.query(query, [usuario_id]);
+    return rows;
   },
 
   getDisponibilidadByUsuario: async (usuario_id) => {

@@ -3,20 +3,21 @@ const jwt = require("jsonwebtoken");
 const Usuario = require("../models/usuarioModel");
 
 const SECRET = process.env.JWT_SECRET || "secret123";
-const ROLES_VALIDOS = ["usuario", "admin"];
+const ROLES_VALIDOS = ["empleado", "admin"];
 
 const register = async (req, res) => {
   try {
     const { nombre, apellido, apellidos, email, password, rol } = req.body;
     const apellidoNormalizado = apellido || apellidos;
-    const rolNormalizado = typeof rol === "string" ? rol.trim().toLowerCase() : "";
+    const rolCrudo = typeof rol === "string" ? rol.trim().toLowerCase() : "";
+    const rolNormalizado = rolCrudo === "usuario" ? "empleado" : (rolCrudo || "empleado");
 
-    if (!nombre || !apellidoNormalizado || !email || !password || !rolNormalizado) {
+    if (!nombre || !apellidoNormalizado || !email || !password) {
       return res.status(400).json({ message: "Completa todos los campos obligatorios." });
     }
 
     if (!ROLES_VALIDOS.includes(rolNormalizado)) {
-      return res.status(400).json({ message: "El rol debe ser 'usuario' o 'admin'." });
+      return res.status(400).json({ message: "El rol debe ser 'empleado' o 'admin'." });
     }
 
     const user = await Usuario.findByEmail(email);

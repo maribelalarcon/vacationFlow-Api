@@ -1,4 +1,5 @@
 const Usuario = require("../models/usuarioModel");
+const Solicitud = require("../models/solicitudModel");
 
 const getUsers = async (req, res) => {
   try {
@@ -67,4 +68,15 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, getUserById, getProfile, updateProfile };
+const getMyRequests = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const solicitudes = await Solicitud.getHistorialByUsuario(userId);
+    res.json(solicitudes);
+  } catch (error) {
+    console.error("Error en Controller:", error);
+    res.status(500).json({ message: "Se produjo un error al obtener el historial de solicitudes." });
+  }
+};
+
+module.exports = { getUsers, getUserById, getProfile, updateProfile, getMyRequests };

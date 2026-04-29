@@ -5,6 +5,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 // Obtener y actualizar el perfil del usuario autenticado
 router.get("/profile", authMiddleware, userController.getProfile);
+router.get("/history", authMiddleware, userController.getMyRequests);
 router.put("/profile", authMiddleware, userController.updateProfile);
 
 // Obtener todos los usuarios y obtener un usuario por ID
