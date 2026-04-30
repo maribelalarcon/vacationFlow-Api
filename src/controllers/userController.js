@@ -49,19 +49,44 @@ const getProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { nombre, apellido, apellidos } = req.body;
+    const { nombre, apellido, apellidos, email, avatar_url } = req.body;
     const apellidoNormalizado = apellido || apellidos;
+    const emailNormalizado = typeof email === "string" ? email.trim().toLowerCase() : undefined;
+    const tieneNombre = typeof nombre === "string" && nombre.trim() !== "";
+    const tieneApellido = typeof apellidoNormalizado === "string" && apellidoNormalizado.trim() !== "";
+    const tieneEmail = typeof emailNormalizado === "string" && emailNormalizado !== "";
+    const tieneAvatar = typeof avatar_url === "string" || avatar_url === null;
 
-    if (!nombre || !apellidoNormalizado) {
-      return res.status(400).json({ message: "El nombre y los apellidos son obligatorios." });
+    if (!tieneAvatar && (!tieneNombre || !tieneApellido || !tieneEmail)) {
+      return res.status(400).json({
+        message: "Debes enviar nombre, apellido y email, o bien una foto de perfil para actualizar.",
+      });
+    }
+
+    if (tieneEmail) {
+      const existingUser = await Usuario.findByEmail(emailNormalizado);
+      if (existingUser && existingUser.id !== userId) {
+        return res.status(400).json({ message: "Ese email ya está en uso por otro usuario." });
+      }
+    }
+
+    if (typeof avatar_url === "string" && avatar_url.length > 3_000_000) {
+      return res.status(400).json({ message: "La foto de perfil es demasiado grande." });
     }
 
     await Usuario.updateProfileById(userId, {
-      nombre,
-      apellido: apellidoNormalizado,
+      nombre: tieneNombre ? nombre.trim() : undefined,
+      apellido: tieneApellido ? apellidoNormalizado.trim() : undefined,
+      email: tieneEmail ? emailNormalizado : undefined,
+      avatar_url,
     });
 
-    res.json({ message: "Perfil actualizado correctamente." });
+    const updatedUser = await Usuario.getProfileById(userId);
+
+    res.json({
+      message: "Perfil actualizado correctamente.",
+      user: updatedUser,
+    });
   } catch (error) {
     console.error("Error en Controller:", error);
     res.status(500).json({ message: "Se produjo un error al actualizar el perfil." });

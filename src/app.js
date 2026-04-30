@@ -12,10 +12,8 @@ const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const vacationRoutes = require("./routes/vacationRoutes");
 
-
-// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
 app.use("/uploads", express.static(path.resolve(__dirname, "../uploads")));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -25,12 +23,10 @@ app.use("/yo", yoRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/vacations", vacationRoutes);
 
-
 app.get("/test2", (req, res) => {
   res.send("Ruta de usuarios operativa");
 });
 
-// Ruta de prueba
 app.get("/test", async (req, res) => {
   try {
     const [rows] = await db.query("SELECT 1");
@@ -41,5 +37,5 @@ app.get("/test", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo`);
+  console.log(`Servidor corriendo en puerto ${PORT}`);
 });

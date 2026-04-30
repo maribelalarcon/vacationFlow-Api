@@ -14,7 +14,7 @@ const Usuario = {
 
   findByEmail: async (email) => {
     const query = `
-      SELECT id, nombre, apellido, email, password_hash, rol, created_at
+      SELECT id, nombre, apellido, email, password_hash, rol, avatar_url, created_at
       FROM usuarios
       WHERE email = ?
       LIMIT 1
@@ -47,6 +47,7 @@ const Usuario = {
         NULL AS telefono,
         email,
         rol,
+        avatar_url,
         created_at
       FROM usuarios
     `;
@@ -63,6 +64,7 @@ const Usuario = {
         NULL AS telefono,
         email,
         rol,
+        avatar_url,
         created_at
       FROM usuarios
       WHERE id = ?
@@ -80,7 +82,8 @@ const Usuario = {
         apellido AS apellidos,
         NULL AS telefono,
         email,
-        rol
+        rol,
+        avatar_url
       FROM usuarios
       WHERE id = ?
       LIMIT 1
@@ -89,13 +92,42 @@ const Usuario = {
     return rows[0] || null;
   },
 
-  updateProfileById: async (id, { nombre, apellido }) => {
+  updateProfileById: async (id, { nombre, apellido, email, avatar_url }) => {
+    const updates = [];
+    const values = [];
+
+    if (typeof nombre === "string") {
+      updates.push("nombre = ?");
+      values.push(nombre);
+    }
+
+    if (typeof apellido === "string") {
+      updates.push("apellido = ?");
+      values.push(apellido);
+    }
+
+    if (typeof email === "string") {
+      updates.push("email = ?");
+      values.push(email);
+    }
+
+    if (typeof avatar_url === "string" || avatar_url === null) {
+      updates.push("avatar_url = ?");
+      values.push(avatar_url);
+    }
+
+    if (updates.length === 0) {
+      return { affectedRows: 0 };
+    }
+
     const query = `
       UPDATE usuarios
-      SET nombre = ?, apellido = ?
+      SET ${updates.join(", ")}
       WHERE id = ?
     `;
-    const [result] = await db.query(query, [nombre, apellido, id]);
+    values.push(id);
+
+    const [result] = await db.query(query, values);
     return result;
   },
 };
