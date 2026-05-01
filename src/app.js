@@ -23,6 +23,14 @@ app.use("/yo", yoRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/vacations", vacationRoutes);
 
+app.get("/", (_req, res) => {
+  res.status(200).send("VacationFlow API OK");
+});
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({ ok: true });
+});
+
 app.get("/test2", (req, res) => {
   res.send("Ruta de usuarios operativa");
 });
@@ -36,6 +44,6 @@ app.get("/test", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
