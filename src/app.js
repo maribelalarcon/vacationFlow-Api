@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const db = require("./db");
+const { ensureDatabaseSchema } = require("./schema");
 const calendarioRoutes = require("./routes/calendario");
 const solicitudesRoutes = require("./routes/solicitudes");
 const yoRoutes = require("./routes/yo");
@@ -44,6 +45,17 @@ app.get("/test", async (req, res) => {
   }
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await ensureDatabaseSchema();
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Servidor corriendo en puerto ${PORT}`);
+    });
+  } catch (error) {
+    console.error("No se pudo validar el esquema de la base de datos:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
